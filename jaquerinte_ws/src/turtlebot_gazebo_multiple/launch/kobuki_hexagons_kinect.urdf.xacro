@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<!--
+    - Base      : kobuki
+    - Stacks    : hexagons
+    - 3d Sensor : kinect
+-->    
+<robot name="turtlebot" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find turtlebot_description)/urdf/turtlebot_library.urdf.xacro" />
+
+
+
+
+<!-- SENSOR -->
+
+<!-- cam 1 -->
+<joint name="backcam1_joint" type="fixed">
+	<origin xyz="0.1 0.3 0.2" rpy="0 0 3.14159"/>
+	<parent link="base_link"/>
+	<child link="backcam1_link"/>
+</joint>
+<link name="backcam1_link"></link>
+
+<!-- cam 2 -->
+<joint name="backcam2_joint" type="fixed">
+	<origin xyz="0.1 -0.3 0.2" rpy="0 0 3.14159"/>
+	<parent link="base_link"/>
+	<child link="backcam2_link"/>
+</joint>
+
+<link name="backcam2_link"></link>
+
+
+
+<gazebo reference="backcam1_link">
+    <sensor type="depth" name="openni_camera_camera">       
+        <always_on>1</always_on>
+        <visualize>true</visualize>             
+        <camera>
+            <horizontal_fov>1.047</horizontal_fov>  
+            <image>
+                <width>640</width>
+                <height>480</height>
+                <format>R8G8B8</format>
+            </image>
+            <depth_camera>
+
+            </depth_camera>
+            <clip>
+                <near>0.1</near>
+                <far>100</far>
+            </clip>
+        </camera>
+        <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
+            <alwaysOn>true</alwaysOn>
+                <updateRate>10.0</updateRate>
+                <cameraName>trasera1</cameraName>
+                <frameName>openni_camera_link</frameName>                   
+            <imageTopicName>trasera1/rgb/image_raw</imageTopicName>
+            <depthImageTopicName>trasera1/depth/image_raw</depthImageTopicName>
+            <pointCloudTopicName>trasera1/depth/points</pointCloudTopicName>
+            <cameraInfoTopicName>trasera1/rgb/camera_info</cameraInfoTopicName>              
+            <depthImageCameraInfoTopicName>trasera1/depth/camera_info</depthImageCameraInfoTopicName>            
+            <pointCloudCutoff>0.4</pointCloudCutoff>                
+                <hackBaseline>0.07</hackBaseline>
+                <distortionK1>0.0</distortionK1>
+                <distortionK2>0.0</distortionK2>
+                <distortionK3>0.0</distortionK3>
+                <distortionT1>0.0</distortionT1>
+                <distortionT2>0.0</distortionT2>
+            <CxPrime>0.0</CxPrime>
+            <Cx>0.0</Cx>
+            <Cy>0.0</Cy>
+            <focalLength>0.0</focalLength>
+            </plugin>
+    </sensor>
+</gazebo>
+
+<gazebo reference="backcam2_link">
+    <sensor type="depth" name="openni_camera_camera">       
+        <always_on>1</always_on>
+        <visualize>true</visualize>             
+        <camera>
+            <horizontal_fov>1.047</horizontal_fov>  
+            <image>
+                <width>640</width>
+                <height>480</height>
+                <format>R8G8B8</format>
+            </image>
+            <depth_camera>
+
+            </depth_camera>
+            <clip>
+                <near>0.1</near>
+                <far>100</far>
+            </clip>
+        </camera>
+        <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
+            <alwaysOn>true</alwaysOn>
+                <updateRate>10.0</updateRate>
+                <cameraName>trasera2</cameraName>
+                <frameName>openni_camera_link</frameName>                   
+            <imageTopicName>trasera2/rgb/image_raw</imageTopicName>
+            <depthImageTopicName>trasera2/depth/image_raw</depthImageTopicName>
+            <pointCloudTopicName>trasera2/depth/points</pointCloudTopicName>
+            <cameraInfoTopicName>trasera2/rgb/camera_info</cameraInfoTopicName>              
+            <depthImageCameraInfoTopicName>trasera2/depth/camera_info</depthImageCameraInfoTopicName>            
+            <pointCloudCutoff>0.4</pointCloudCutoff>                
+                <hackBaseline>0.07</hackBaseline>
+                <distortionK1>0.0</distortionK1>
+                <distortionK2>0.0</distortionK2>
+                <distortionK3>0.0</distortionK3>
+                <distortionT1>0.0</distortionT1>
+                <distortionT2>0.0</distortionT2>
+            <CxPrime>0.0</CxPrime>
+            <Cx>0.0</Cx>
+            <Cy>0.0</Cy>
+            <focalLength>0.0</focalLength>
+            </plugin>
+    </sensor>
+</gazebo>
+
+
+
+
+
+  
+  <kobuki/>
+  <stack_hexagons parent="base_link"/>
+  <sensor_kinect  parent="base_link"/>
+</robot>

@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+    <launch>
+  <arg name="base"      value="$(optenv TURTLEBOT_BASE kobuki)"/> <!-- create, roomba -->
+  <arg name="battery"   value="$(optenv TURTLEBOT_BATTERY /proc/acpi/battery/BAT0)"/>  <!-- /proc/acpi/battery/BAT0 --> 
+  <arg name="stacks"    value="$(optenv TURTLEBOT_STACKS hexagons)"/>  <!-- circles, hexagons --> 
+  <arg name="3d_sensor" value="$(optenv TURTLEBOT_3D_SENSOR kinect)"/>  <!-- kinect, asus_xtion_pro --> 
+
+      <!-- No namespace here as we will share this description. 
+           Access with slash at the beginning -->
+       <arg name="urdf_file" default="$(find xacro)/xacro.py '$(find turtlebot_gazebo_multiple)/launch/$(arg base)_$(arg stacks)_kinect.urdf.xacro'" />
+  <param name="robot_description" command="$(arg urdf_file)" />
+
+      <!-- BEGIN ROBOT 1-->
+      <group ns="robot1">
+        <param name="tf_prefix" value="robot1_tf" />
+        <include file="$(find turtlebot_gazebo_multiple)/launch/one_robot.launch" >
+          <arg name="init_pose" value="-x -6.5 -y 8.5 -z 0" />
+          <arg name="robot_name"  value="robot1" />
+        </include>
+      </group>
+
+      <!-- BEGIN ROBOT 2-->
+
+      <group ns="robot2">
+        <param name="tf_prefix" value="robot2_tf" />
+        <include file="$(find turtlebot_gazebo_multiple)/launch/one_robot.launch" >
+          <arg name="init_pose" value="-x -6.5 -y 9.5 -z 0" />
+          <arg name="robot_name"  value="robot2" />
+        </include>
+      </group>
+
+    </launch>
