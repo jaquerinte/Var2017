@@ -1,0 +1,6 @@
+robot azulmarino
+robot 4
+
+A importar en el codigo 
+
+export ROS_MASTER_URI=http://clL01-1:11311
