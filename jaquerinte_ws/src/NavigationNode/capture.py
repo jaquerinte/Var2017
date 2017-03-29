@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
 import roslib
-#roslib.load_manifest('deep_navigation')
+roslib.load_manifest('NavigationNode')
 import sys
 import rospy
 import cv2
@@ -23,6 +23,7 @@ class NavigationNode:
 
     self.bridge = CvBridge()
     self.image_sub = rospy.Subscriber("/robot1/camera/rgb/image_raw",Image,self.imageCallback)
+    self.imageTr1_sub = rospy.Subscriber("/robot1/trasera1/trasera1/rgb/image_raw",Image,self.imageCallbackTr)
     self.odom_sub = rospy.Subscriber("/robot1/odom",Odometry,self.odomCallback)
 
     self.cmd_vel = rospy.Publisher('/robot1/mobile_base/commands/velocity', Twist, queue_size=1)
@@ -30,6 +31,7 @@ class NavigationNode:
     self.lastLinearVelocityX = None
     self.lastAngularVelocityZ = None
     self.lastImage = None
+    self.lastImageT1 = None
 
   def odomCallback(self, data):
     #print("Linear:",data.twist.twist.linear)
@@ -41,6 +43,12 @@ class NavigationNode:
     try:
       cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
       self.lastImage = cv_image
+    except CvBridgeError as e:
+      print(e)
+  def imageCallbackTr(self,data):
+    try:
+      cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+      self.lastImageT1 = cv_image
     except CvBridgeError as e:
       print(e)
 
@@ -62,19 +70,20 @@ class NavigationNode:
           if event.type == KEYDOWN and event.key == 276: # right
             move_cmd.angular.z += 0.1
           if event.type == KEYDOWN and event.key == 273: # straight
-            move_cmd.linear.x = 0.6
+            move_cmd.linear.x = 0.5
           if event.type == KEYDOWN and event.key == 274: # stop
             if move_cmd.linear.x > 0:
               move_cmd.linear.x = 0.0
 
         pygame.event.pump()
         cv2.imshow("Image window", self.lastImage)
+        cv2.imshow("back",self.lastImageT1)
         cv2.waitKey(3)
 
         # Save Velocities and Image
       	if move_cmd.linear.x != 0.0 or move_cmd.angular.z != 0.0:
           print("Vel Lin:",move_cmd.linear.x, "Vel Ang:",move_cmd.angular.z)
-          fileName = 'dataset-circuit/'+str(i)+'.jpg'
+          fileName = './dataset-circuit/'+str(i)+'.jpg'
           cv2.imwrite(fileName, self.lastImage)
           f.write(fileName+ ' '+str(move_cmd.linear.x)+' '+str(move_cmd.angular.z)+'\n')
 
