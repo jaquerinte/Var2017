@@ -12,14 +12,15 @@ import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 import rospy
+import sys
 
 class Panorama:
 
 	def __init__(self):
 
 	    self.bridge = CvBridge()
-	    self.image_sub = rospy.Subscriber("/robot1/camera/rgb/image_raw",Image,self.imageCallbackIzq)
-	    self.image_sub = rospy.Subscriber("/robot1/camera/rgb/image_raw",Image,self.imageCallbackDer)
+	    self.image_sub = rospy.Subscriber("/robot4/trasera1/trasera1/rgb/image_raw",Image,self.imageCallbackIzq)
+	    self.image_sub = rospy.Subscriber("/robot4/trasera2/trasera2/rgb/image_raw",Image,self.imageCallbackDer)
 
 
 	    self.ImageIzq = None
@@ -33,13 +34,14 @@ class Panorama:
 			print(e)
 
 	def imageCallbackDer(self,data):
-	    try:
-	      cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
-	      self.ImageDer = cv_image
-	    except CvBridgeError as e:
-	      print(e)
+		try:
+			cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+			self.ImageDer = cv_image
+		except CvBridgeError as e:
+			print(e)
 
 	def run(self):
+		
 		while True:
 			# construct the argument parse and parse the arguments
 			#ap = argparse.ArgumentParser()
@@ -53,20 +55,22 @@ class Panorama:
 			# (for faster processing)
 			#imageA = cv2.imread(args["first"])
 			#imageB = cv2.imread(args["second"])
-			imageA = imutils.resize(self.ImageIzq, width=400)
-			imageB = imutils.resize(self.ImageDer, width=400)
+			try:
+				imageA = imutils.resize(self.ImageIzq, width=400)
+				imageB = imutils.resize(self.ImageDer, width=400)
 
-			# stitch the images together to create a panorama
-			stitcher = Stitcher()
-			(result, vis) = stitcher.stitch([imageA, imageB], showMatches=True)
+				# stitch the images together to create a panorama
+				stitcher = Stitcher()
+				(result, vis) = stitcher.stitch([imageA, imageB], showMatches=True)
 
-			# show the images
-			#cv2.imshow("Image A", imageA)
-			#cv2.imshow("Image B", imageB)
-			#cv2.imshow("Keypoint Matches", vis)
-			cv2.imshow("Result", result)
-			#cv2.imwrite("panorama.png",result)
-			cv2.waitKey(0)
+				# show the images
+				cv2.imshow("Image A", imageA)
+				cv2.imshow("Image B", imageB)
+				cv2.imshow("Keypoint Matches", vis)
+				cv2.imshow("Result", result)
+				cv2.imwrite("panorama.png",result)
+			except Exception:
+				continue
 
 def main(args):
 	ic = Panorama()
