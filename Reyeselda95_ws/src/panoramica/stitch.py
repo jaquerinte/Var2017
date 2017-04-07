@@ -13,68 +13,74 @@ from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 import rospy
 import sys
+import time
 
 class Panorama:
 
 	def __init__(self):
-
+		# Inicializamos el puente para utilizar OpenCV y obtener las imagenes a partir de los topicos de ROS
 	    self.bridge = CvBridge()
-	    self.image_sub = rospy.Subscriber("/robot4/trasera1/trasera1/rgb/image_raw",Image,self.imageCallbackIzq)
-	    self.image_sub = rospy.Subscriber("/robot4/trasera2/trasera2/rgb/image_raw",Image,self.imageCallbackDer)
+	    # Obtenemos la imagen de la camara trasera izquierda
+	    self.image_sub = rospy.Subscriber("/robot1/trasera2/trasera2/rgb/image_raw",Image,self.imageCallbackIzq)
+	    # Obtenemos la imagen de la camara trasera derecha
+	    self.image_sub = rospy.Subscriber("/robot1/trasera1/trasera1/rgb/image_raw",Image,self.imageCallbackDer)
 
-
+	    # Inicializamos las imagenes a None
 	    self.ImageIzq = None
 	    self.ImageDer = None
 
 	def imageCallbackIzq(self,data):
 		try:
+			# Obetenemos la imagen del topico y la transformamos a un formato entendible para OpenCV
 			cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
 			self.ImageIzq = cv_image
 		except CvBridgeError as e:
-			print(e)
+			print(e) # Si se produce algun error se imprime
 
 	def imageCallbackDer(self,data):
 		try:
+			# Obetenemos la imagen del topico y la transformamos a un formato entendible para OpenCV
 			cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
 			self.ImageDer = cv_image
 		except CvBridgeError as e:
-			print(e)
+			print(e) # Si se produce algun error se imprime
 
+	# Llama al algoritmo de stitch
 	def run(self):
-		
 		while True:
-			# construct the argument parse and parse the arguments
-			#ap = argparse.ArgumentParser()
-			#ap.add_argument("-f", "--first", required=True,
-			#	help="path to the first image")
-			#ap.add_argument("-s", "--second", required=True,
-			#	help="path to the second image")
-			#args = vars(ap.parse_args())
-
-			# load the two images and resize them to have a width of 400 pixels
-			# (for faster processing)
-			#imageA = cv2.imread(args["first"])
-			#imageB = cv2.imread(args["second"])
 			try:
-				imageA = imutils.resize(self.ImageIzq, width=400)
-				imageB = imutils.resize(self.ImageDer, width=400)
+				# Transformamos las imagenes para que tengan un ancho de 400 pixeles
+				#imageA = imutils.resize(self.ImageIzq, width=400) 
+				#imageB = imutils.resize(self.ImageDer, width=400)
 
-				# stitch the images together to create a panorama
+				imageA = self.ImageIzq
+				imageB = self.ImageDer
+
+				# Junta las imagenes para crear una panoramica
 				stitcher = Stitcher()
-				(result, vis) = stitcher.stitch([imageA, imageB], showMatches=True)
+								
+				# Muestra las imagenes
+				#cv2.imshow("Image A", imageA) # Muestra la imagen de la izquierda
+				#cv2.imshow("Image B", imageB) # Muestra la imagen de la derecha
+				#cv2.waitKey(3) # Necesario para que se muestren las imagenes antes de que se ejecute el algoritmo, en caso de error en el mismo
+				#result= stitcher.stitch([imageA, imageB], showMatches=False) # Devuelve unicamente la transformacion de la imagen.
+				(result, vis) = stitcher.stitch([imageA, imageB], showMatches=True) # Devuelve la imagen transformada y la visualizacion de sus puntos comunes
 
-				# show the images
-				cv2.imshow("Image A", imageA)
-				cv2.imshow("Image B", imageB)
 				cv2.imshow("Keypoint Matches", vis)
 				cv2.imshow("Result", result)
-				cv2.imwrite("panorama.png",result)
-			except Exception:
+				cv2.imwrite("panorama.png",result) # Guardamos la panoramica en el archivo "panorama.jpg"
+				time.sleep(.300) # Esperamos 300 milisegundos antes de ejecutar la siguiente panoramica
+				cv2.waitKey(3) # Debemos poner un waitkey para que muestre las imagenes
+			except Exception as e:
+				#print(e) #imprime la excepcion en caso de ser necesaria
 				continue
 
 def main(args):
+	# Creaamos una instancia de la clase panorama
 	ic = Panorama()
+	# Iniciamos el nodo panorama llamando a __init__ de su clase
 	rospy.init_node('Panorama', anonymous=True)
+	# Llamamos al algoritmo
 	ic.run()
   
 

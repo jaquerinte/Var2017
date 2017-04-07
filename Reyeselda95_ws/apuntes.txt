@@ -1,0 +1,5 @@
+SURF ---> tiene mas dificultades que SIFT al buscar clasificadores
+SIFT ---> si no encuentra un clasificador no funciona bien
+ORB --> funciona muy bien
+
+Los 3 tienen problemas al encontrar mathes en imagenes planas
