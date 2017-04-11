@@ -21,9 +21,9 @@ class Panorama:
 		# Inicializamos el puente para utilizar OpenCV y obtener las imagenes a partir de los topicos de ROS
 	    self.bridge = CvBridge()
 	    # Obtenemos la imagen de la camara trasera izquierda
-	    self.image_sub = rospy.Subscriber("/robot1/trasera2/trasera2/rgb/image_raw",Image,self.imageCallbackIzq)
+	    self.image_sub = rospy.Subscriber("/robot4/trasera2/trasera2/rgb/image_raw",Image,self.imageCallbackIzq)
 	    # Obtenemos la imagen de la camara trasera derecha
-	    self.image_sub = rospy.Subscriber("/robot1/trasera1/trasera1/rgb/image_raw",Image,self.imageCallbackDer)
+	    self.image_sub = rospy.Subscriber("/robot4/trasera1/trasera1/rgb/image_raw",Image,self.imageCallbackDer)
 
 	    # Inicializamos las imagenes a None
 	    self.ImageIzq = None

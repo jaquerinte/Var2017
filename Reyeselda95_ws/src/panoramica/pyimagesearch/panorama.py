@@ -12,10 +12,10 @@ class Stitcher:
 		showMatches=False):
 		# Desempaquetamos las imagenes, detectamos los keypointsy extraemos los descriptores invariantes de ellos
 		(imageB, imageA) = images
-
-		(kpsA, featuresA) = self.detectAndDescribe(imageA)		
+		
+		(kpsA, featuresA) = self.detectAndDescribe(imageA)	
 		(kpsB, featuresB) = self.detectAndDescribe(imageB)
-
+		
 		# Obtenemos los matches entre las dos imagenes
 		M = self.matchKeypoints(kpsA, kpsB,
 			featuresA, featuresB, ratio, reprojThresh)
@@ -24,7 +24,7 @@ class Stitcher:
 		if M is None:
 			return None
 
-		# Sino, aplicamos aplicamos la deformación para unir las imagenes en una misma panoramica
+		# Sino, aplicamos aplicamos la deformacion para unir las imagenes en una misma panoramica
 		(matches, H, status) = M
 		result = cv2.warpPerspective(imageA, H,
 			(imageA.shape[1] + imageB.shape[1], imageA.shape[0]))
@@ -49,7 +49,9 @@ class Stitcher:
 		# Comprobamos si usamon OpenCV 3.X
 		if self.isv3:
 			# Detectamos y extraemos caracteristicas de la imagen
-			descriptor = cv2.xfeatures2d.ORB_create()
+
+			#descriptor = cv2.xfeatures2d.SIFT_create() # Para SIFT_create() y SURF_create()
+			descriptor = cv2.ORB_create() # Para ORB_create()
 			(kps, features) = descriptor.detectAndCompute(image, None)
 
 		# Sino, utilizamos OpenCV 2.4.X
@@ -61,7 +63,6 @@ class Stitcher:
 			# Extraemos caracteristicas de la imagen
 			extractor = cv2.DescriptorExtractor_create("ORB")
 			(kps, features) = extractor.compute(gray, kps)
-
 		# Convertimos los keypoints de objetos Keypoint a arrays de NumPy
 		kps = np.float32([kp.pt for kp in kps])
 		# Devuelve una tupla de keypoints y caracteristicas
@@ -73,16 +74,8 @@ class Stitcher:
 		#computa los matches de cada imagen e inicializa la lista de  matches actual
 		matcher = cv2.DescriptorMatcher_create("BruteForce")
 		rawMatches = matcher.knnMatch(featuresA, featuresB, 2) #Calcula los matches de la derecha con la izquierda
-		rawMatches2 = matcher.knnMatch(featuresB, featuresA, 2) #Calcula los matches de la izquierda con la derecha
 		matches = []
 
-		#DEBUG
-		print("************************************")
-		print(rawMatches)
-		print("------------------------------------")
-		print(rawMatches2)
-		print("////////////////////////////////////")
-		cv2.waitKey(0) #Espera a que se presione alguna tecla antes de imprimir nada
 		######################################
 		# Bucle de matches
 		for m in rawMatches:
@@ -90,13 +83,13 @@ class Stitcher:
 			if len(m) == 2 and m[0].distance < m[1].distance * ratio:
 				matches.append((m[0].trainIdx, m[0].queryIdx))
 
-		# Para calcular la homografía deben haber al menos 4 matches
+		# Para calcular la homografia deben haber al menos 4 matches
 		if len(matches) > 4:
 			# Construimos 2 sets de puntos
 			ptsA = np.float32([kpsA[i] for (_, i) in matches])
 			ptsB = np.float32([kpsB[i] for (i, _) in matches])
 
-			# Calculamos la homografía entre los dos conjuntos de puntos utilizando RANSAC
+			# Calculamos la homografia entre los dos conjuntos de puntos utilizando RANSAC
 			(H, status) = cv2.findHomography(ptsA, ptsB, cv2.RANSAC,
 				reprojThresh)
 
