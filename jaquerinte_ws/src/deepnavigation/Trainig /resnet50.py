@@ -183,8 +183,7 @@ def ResNet50(include_top=True, weights='imagenet',
     x = Flatten()(x)
     x = Dense(2 )(x)
 
+
     model = Model(img_input, x)
-    optimizer = 'rmsprop'
-    
     return model
 
