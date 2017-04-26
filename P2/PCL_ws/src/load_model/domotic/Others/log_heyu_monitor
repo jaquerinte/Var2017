@@ -1,0 +1,80 @@
+^Cjavi@vubuntu:~$ sudo heyu monitor
+03/25 00:30:59  Monitor started
+03/25 00:30:59  rcvi addr unit       1 : hu A1  (_no_alias_)
+03/25 00:30:59  rcvi func           On : hc A
+03/25 00:31:00  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:31:09  rcvi addr unit       1 : hu A1  (_no_alias_)
+03/25 00:31:09  rcvi func           On : hc A
+03/25 00:31:10  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:31:17  rcvi addr unit       1 : hu A1  (_no_alias_)
+03/25 00:31:17  rcvi func           On : hc A
+03/25 00:31:18  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:31:22  rcvi addr unit       1 : hu A1  (_no_alias_)
+03/25 00:31:23  rcvi func           On : hc A
+03/25 00:31:23  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:31:28  rcvi addr unit       1 : hu A1  (_no_alias_)
+03/25 00:31:29  rcvi func           On : hc A
+03/25 00:31:29  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:31:30  sndc func           On : hc A
+03/25 00:31:41  sndc func           On : hc A
+03/25 00:31:41  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:31:52  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:31:53  sndc func           On : hc A
+03/25 00:32:04  sndc func           On : hc A
+03/25 00:32:15  sndc func           On : hc A
+03/25 00:32:25  rcvi addr unit       1 : hu A1  (_no_alias_)
+03/25 00:32:26  rcvi func          Off : hc A
+03/25 00:32:26  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:32:27  sndc func           On : hc A
+03/25 00:32:27  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:32:28  sndc func           On : hc A
+03/25 00:32:39  sndc func           On : hc A
+03/25 00:32:50  sndc func           On : hc A
+03/25 00:33:01  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:33:03  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:33:05  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:33:07  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:33:07  rcvi addr unit       1 : hu A1  (_no_alias_)
+03/25 00:33:07  rcvi func           On : hc A
+03/25 00:33:08  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:33:19  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:33:20  sndc func           On : hc A
+03/25 00:33:31  sndc func           On : hc A
+03/25 00:33:32  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:33:43  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:33:43  sndc func           On : hc A
+03/25 00:33:44  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:33:44  sndc func           On : hc A
+03/25 00:33:45  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:33:56  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:33:57  rcvi addr unit       1 : hu A1  (_no_alias_)
+03/25 00:33:57  rcvi func          Off : hc A
+03/25 00:33:58  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:34:09  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:34:20  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:34:20  sndc func           On : hc A
+03/25 00:34:31  sndc func           On : hc A
+03/25 00:34:32  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:34:32  sndc func           On : hc A
+03/25 00:34:43  sndc func           On : hc A
+03/25 00:34:44  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:34:45  sndc func           On : hc A
+03/25 00:34:56  sndc func           On : hc A
+03/25 00:34:56  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:34:57  sndc func           On : hc A
+03/25 00:35:08  sndc func           On : hc A
+03/25 00:35:09  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:35:20  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:35:20  sndc func           On : hc A
+03/25 00:35:21  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:35:29  rcvi addr unit       1 : hu A1  (_no_alias_)
+03/25 00:35:29  rcvi func           On : hc A
+03/25 00:35:30  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:35:30  sndc func           On : hc A
+03/25 00:35:31  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:35:37  rcvi addr unit       1 : hu A1  (_no_alias_)
+03/25 00:35:37  rcvi func          Off : hc A
+03/25 00:35:38  sndc addr unit       1 : hu A1  (_no_alias_)
+03/25 00:35:38  sndc func           On : hc A
+03/25 00:35:49  sndc func           On : hc A
+

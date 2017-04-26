@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<launch>
+  <param name="/use_sim_time" value="true" />
+
+  <!-- start world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="use_sim_time" value="true"/>
+    <arg name="debug" value="false"/>
+    <!-- <arg name="world_name" value="$(find load_willow)/willowgarage/willow.sdf"/> -->
+    <arg name="world_name" value="$(find load_model)/domotic/Actors_GrannyAnnie.world"/> 
+  </include>
+
+   <arg name="base"      value="$(optenv TURTLEBOT_BASE kobuki)"/> <!-- create, roomba -->
+  <arg name="battery"   value="$(optenv TURTLEBOT_BATTERY /proc/acpi/battery/BAT0)"/>  <!-- /proc/acpi/battery/BAT0 --> 
+  <arg name="stacks"    value="$(optenv TURTLEBOT_STACKS hexagons)"/>  <!-- circles, hexagons --> 
+  <arg name="3d_sensor" value="$(optenv TURTLEBOT_3D_SENSOR kinect)"/>  <!-- kinect, asus_xtion_pro --> 
+
+
+	<arg name="urdf_file" default="$(find xacro)/xacro.py '$(find turtlebot_description)/robots/$(arg base)_$(arg stacks)_$(arg 3d_sensor).urdf.xacro'" />
+    <param name="robot_description" command="$(arg urdf_file)" />
+      
+  
+      <!-- BEGIN ROBOT 1-->
+      
+
+        <include file="$(find load_model)/one_robot.launch" >
+          <arg name="init_pose" value="-x -8.5 -y -1.5 -z 0" />
+          <arg name="robot_name"  value="robot1" />
+        </include>
+
+
+</launch>
