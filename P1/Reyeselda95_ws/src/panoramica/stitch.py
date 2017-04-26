@@ -21,9 +21,9 @@ class Panorama:
 		# Inicializamos el puente para utilizar OpenCV y obtener las imagenes a partir de los topicos de ROS
 	    self.bridge = CvBridge()
 	    # Obtenemos la imagen de la camara trasera izquierda
-	    self.image_sub = rospy.Subscriber("/robot4/trasera2/trasera2/rgb/image_raw",Image,self.imageCallbackIzq)
+	    self.image_sub = rospy.Subscriber("/robot1/trasera2/trasera2/rgb/image_raw",Image,self.imageCallbackIzq)
 	    # Obtenemos la imagen de la camara trasera derecha
-	    self.image_sub = rospy.Subscriber("/robot4/trasera1/trasera1/rgb/image_raw",Image,self.imageCallbackDer)
+	    self.image_sub = rospy.Subscriber("/robot1/trasera1/trasera1/rgb/image_raw",Image,self.imageCallbackDer)
 
 	    # Inicializamos las imagenes a None
 	    self.ImageIzq = None
@@ -55,22 +55,23 @@ class Panorama:
 
 				imageA = self.ImageIzq
 				imageB = self.ImageDer
-
 				# Junta las imagenes para crear una panoramica
 				stitcher = Stitcher()
-								
 				# Muestra las imagenes
-				#cv2.imshow("Image A", imageA) # Muestra la imagen de la izquierda
-				#cv2.imshow("Image B", imageB) # Muestra la imagen de la derecha
-				#cv2.waitKey(3) # Necesario para que se muestren las imagenes antes de que se ejecute el algoritmo, en caso de error en el mismo
+				cv2.imshow("Image A", imageA) # Muestra la imagen de la izquierda
+				cv2.imshow("Image B", imageB) # Muestra la imagen de la derecha
+				cv2.imwrite("A.png",imageA)
+				cv2.imwrite("B.png",imageB)
+				cv2.waitKey(3) # Necesario para que se muestren las imagenes antes de que se ejecute el algoritmo, en caso de error en el mismo
 				#result= stitcher.stitch([imageA, imageB], showMatches=False) # Devuelve unicamente la transformacion de la imagen.
 				(result, vis) = stitcher.stitch([imageA, imageB], showMatches=True) # Devuelve la imagen transformada y la visualizacion de sus puntos comunes
 
 				cv2.imshow("Keypoint Matches", vis)
 				cv2.imshow("Result", result)
+				cv2.imwrite("matches.png",vis)
 				cv2.imwrite("panorama.png",result) # Guardamos la panoramica en el archivo "panorama.jpg"
 				time.sleep(.300) # Esperamos 300 milisegundos antes de ejecutar la siguiente panoramica
-				cv2.waitKey(3) # Debemos poner un waitkey para que muestre las imagenes
+				cv2.waitKey(0) # Debemos poner un waitkey para que muestre las imagenes
 			except Exception as e:
 				#print(e) #imprime la excepcion en caso de ser necesaria
 				continue
