@@ -13,7 +13,7 @@
 void simpleVis ()
 {
 	 pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>); 
-	 if (pcl::io::loadPCDFile<pcl::PointXYZRGB> ("/home/jaquer/Var2017/P2/PCL_ws/src/testFIle.pcd", *cloud) == -1){  //* load the file 
+	 if (pcl::io::loadPCDFile<pcl::PointXYZRGB> ("./PointCloudCaptures/capture_10.pcd", *cloud) == -1){  //* load the file 
     		PCL_ERROR ("Couldn't read the pcd file  \n"); 
   		} 
 	// Crea el visualizador

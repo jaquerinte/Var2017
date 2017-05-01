@@ -9,6 +9,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <iostream>
+#include <string> 
 
 pcl::PointCloud<pcl::PointXYZRGB>::Ptr visu_pc (new pcl::PointCloud<pcl::PointXYZRGB>);
 
@@ -22,8 +23,6 @@ void simpleVis ()
 	  viewer.showCloud (visu_pc);
 	//Para el hilo 1000 milisegundos 
 	  boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
-	  //pcl::io::savePCDFile("./testFIle.pcd",*visu_pc,false);
-	  //exit(-1);
 	}
 
 }
@@ -33,7 +32,6 @@ void callback(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& msg)
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>(*msg));
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZRGB>);
 
-	//pcl::UniformSampling<pcl::PointXYZ> uniform_sampling;
 
 	cout << "Puntos capturados: " << cloud->size() << endl;
 
@@ -56,13 +54,19 @@ int main(int argc, char** argv)
   ros::Subscriber sub = nh.subscribe<pcl::PointCloud<pcl::PointXYZRGB> >("/camera/depth/points", 1, callback);
 
   boost::thread t(simpleVis);
-
+  int n = 0;
   while(ros::ok())
   {
 	ros::spinOnce();
 	try {
-	pcl::io::savePCDFile("./testFIle.pcd",*visu_pc,false);
-	boost::this_thread::sleep(boost::posix_time::milliseconds(10000));
+	//std::string value = std::stoi(n);
+	std::stringstream sstm;
+	sstm << "./PointCloudCaptures/capture_" << n << ".pcd";
+	std::string result = sstm.str();
+
+	pcl::io::savePCDFile(result,*visu_pc,false);
+	boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+	++n;
 	} catch(const std::exception& ex){
 
 	}
