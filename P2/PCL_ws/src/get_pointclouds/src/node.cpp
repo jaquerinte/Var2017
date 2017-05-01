@@ -21,9 +21,9 @@ void simpleVis ()
 	//mientras no se cierre muestre la nube de puntos 
 	  viewer.showCloud (visu_pc);
 	//Para el hilo 1000 milisegundos 
-
 	  boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
-	  pcl::io::savePCDFile("./testFIle.pcd",*visu_pc,false);
+	  //pcl::io::savePCDFile("./testFIle.pcd",*visu_pc,false);
+	  //exit(-1);
 	}
 
 }
@@ -60,6 +60,12 @@ int main(int argc, char** argv)
   while(ros::ok())
   {
 	ros::spinOnce();
+	try {
+	pcl::io::savePCDFile("./testFIle.pcd",*visu_pc,false);
+	boost::this_thread::sleep(boost::posix_time::milliseconds(10000));
+	} catch(const std::exception& ex){
+
+	}
   }
 
 }
