@@ -21,51 +21,68 @@ const float min_scale = 0.01f;
 const int n_octaves = 3;
 const int n_scales_per_octave = 4;
 const float min_contrast = 0.001f;
+const float normal_radius = 0.03f;
 
+void featuresDetector(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &cloud,pcl::PointCloud<pcl::Normal>::Ptr &normals_out){
+	pcl::NormalEstimation<pcl::PointXYZRGB, pcl::Normal> norm_est;
+	norm_est.setSearchMethod(pcl::search::KdTree<pcl::PointXYZRGB>::Ptr(new pcl::search::KdTree<pcl::PointXYZRGB>));
+	norm_est.setRadiusSearch (normal_radius);
+	norm_est.setInputCloud (cloud);
+	norm_est.setSearchSurface (cloud);
+	norm_est.compute (*normals_out);
+}
 
-
-
-void simpleVis ()
-{
-	 pcl::visualization::PCLVisualizer viz; 
-	 pcl::PointCloud<pcl::PointWithScale>::Ptr keypoints (new pcl::PointCloud<pcl::PointWithScale>);
-	 pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>); 
-	 if (pcl::io::loadPCDFile<pcl::PointXYZRGB> ("./PointCloudCaptures/capture_8.pcd", *cloud) == -1){  //* load the file 
-    		PCL_ERROR ("Couldn't read the pcd file  \n"); 
-  		} 
-	// Crea el visualizador
-  	//pcl::visualization::CloudViewer viewer ("Cloud Viewer");
-  	
-  	pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointWithScale> sift;
+void keypointsDetector(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &cloud,pcl::PointCloud<pcl::PointWithScale>::Ptr &keypoints_out){
+	pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointWithScale> sift;
   	// Use  KdTree to perform neighborhood searches
 	sift.setSearchMethod(pcl::search::KdTree<pcl::PointXYZRGB>::Ptr(new pcl::search::KdTree<pcl::PointXYZRGB>)); 
 	sift.setScales (min_scale, n_octaves, n_scales_per_octave);
 	sift.setMinimumContrast (min_contrast);
 	sift.setInputCloud (cloud);
+    sift.compute(*keypoints_out); 
+}
 
-	pcl::PointCloud<pcl::PointWithScale>::Ptr keypoints_out_target(new pcl::PointCloud<pcl::PointWithScale>); 
-    sift.compute(*keypoints_out_target); 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_target(new pcl::PointCloud<pcl::PointXYZ>); 
-    pcl::copyPointCloud(*keypoints_out_target, *keypoints_target); 
+void simpleVis ()
+{	
+	//visualicer
+	 pcl::visualization::PCLVisualizer viz; 
+	//features 
+	 pcl::PointCloud<pcl::Normal>::Ptr normals_out (new pcl::PointCloud<pcl::Normal>);
+	//keypoints 
+	 pcl::PointCloud<pcl::PointWithScale>::Ptr keypoints_out (new pcl::PointCloud<pcl::PointWithScale>);
+	//cloud
+	 pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>); 
+	//* load the file 
+	 if (pcl::io::loadPCDFile<pcl::PointXYZRGB> ("./PointCloudCaptures/capture_4.pcd", *cloud) == -1){  
+    		PCL_ERROR ("Couldn't read the pcd file  \n"); 
+  		} 
+  	//cloud loaded 
+  	//compute normals detector
+  	featuresDetector(cloud,normals_out);
+  	//compute sift detector 
+	keypointsDetector(cloud,keypoints_out);
+	//create an axiliar cloud for visualization purpose
+	pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_target(new pcl::PointCloud<pcl::PointXYZ>);
+	//pcl::PointCloud<pcl::PointXYZ>::Ptr normals_target(new pcl::PointCloud<pcl::PointXYZ>);
+	//copy the cloud
+    pcl::copyPointCloud(*keypoints_out, *keypoints_target); 
+    //pcl::copyPointCloud(*normals_out,*normals_target);
 
-        //Visualize point cloud and keypoints 
-        
+    //Visualize point cloud and keypoints 
 	viz.addPointCloud(cloud, "target"); 
     viz.addPointCloud(keypoints_target, "keypoint"); 
+    viz.addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal>(cloud, normals_out, 10, 0.05, "normals");
+    //viz.addPointCloud(normals_target,"normals");
     viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 255, 0, 0, "keypoint"); 
-
-
+    //print points for features
+    cout << "Puntos de normales: " << normals_out->size() << endl;
+    //print points for detector
+    cout << "Puntos de sift: " << keypoints_out->size() << endl;
   	//visualizo 
 	while(!viz.wasStopped())
 	{
-	//mientras no se cierre muestre la nube de puntos 
-	  //viewer.showCloud (cloud);
-
-        
-        viz.spinOnce (100);
-	  //viewerNormal.showCloud(cloud_normals)
+        viz.spinOnce ();
 	//Para el hilo 1000 milisegundos 
-	   
 	  boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 	}
 }
