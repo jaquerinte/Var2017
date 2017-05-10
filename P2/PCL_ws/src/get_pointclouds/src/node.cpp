@@ -40,7 +40,6 @@ void callback(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& msg)
 	vGrid.setLeafSize (0.005f, 0.005f, 0.005f);
 	vGrid.filter (*cloud_filtered);
 
-	cout << "Puntos tras VG: " << cloud_filtered->size() << endl;
 
 	visu_pc = cloud_filtered;
 	
