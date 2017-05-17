@@ -55,26 +55,20 @@ class NavigationNode:
       i=0
       while True:
         #rospy.spin()
-        move_cmd.angular.z = 0.0
-        move_cmd.linear.x = 0.0
         for event in pygame.event.get():
           if event.type == QUIT: sys.exit()
           if event.type == KEYDOWN and event.key == K_a: # left
-            move_cmd.angular.z = 0.6
-            if event.type == KEYDOWN and event.key == K_w: # straight
-           		move_cmd.linear.x = 6.0
-			if event.type == KEYDOWN and event.key == K_s:
-				move_cmd.linear.x = -6.0
+			move_cmd.linear.x = 0.0
+			move_cmd.angular.z = 0.2
           if event.type == KEYDOWN and event.key == K_d: # right
-			move_cmd.angular.z = -0.6
-			if event.type == KEYDOWN and event.key == K_w: # straight
-				move_cmd.linear.x = 6.0
-			if event.type == KEYDOWN and event.key == K_s: # back
-				move_cmd.linear.x = -6.0
+			move_cmd.linear.x = 0.0
+			move_cmd.angular.z = -0.2
           if event.type == KEYDOWN and event.key == K_w: # straight
-            move_cmd.linear.x = 6.0
-          if event.type == KEYDOWN and event.key == K_s: # back
-              move_cmd.linear.x = -6.0
+			move_cmd.angular.z = 0.0
+			move_cmd.linear.x = 0.3
+          if event.type == KEYDOWN and event.key == K_s: # stop
+			move_cmd.linear.x = 0.0
+			move_cmd.angular.z = 0.0
           
 
         pygame.event.pump()

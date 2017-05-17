@@ -1,0 +1,19 @@
+VoxelGrid -> Downsampling
+
+2 metodos
+	* Centroide  (Por defecto)
+	| X         X	|		|	  X			|
+	|	   X		|		|				|
+	|				| ----->|				|
+	|				|		|				|
+	|_______________|		|_______________|
+
+	* Centro (Uniform Sampling)
+
+	| X         X	|		|	  			|
+	|	   X		|		|				|
+	|				| ----->|		X		|
+	|				|		|				|
+	|_______________|		|_______________|
+
+Utilizar SLAM para eliminar el problema de la doble pared.
