@@ -118,9 +118,11 @@ void simpleVis ()
 	//visualicer
 	 pcl::visualization::PCLVisualizer viz; 
 	 pcl::visualization::PCLVisualizer viz2; 
+	// pcl::visualization::PCLVisualizer viz3; 
 	//cloud
 	 pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
 	 pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud2 (new pcl::PointCloud<pcl::PointXYZRGB>);
+	 pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_dst (new pcl::PointCloud<pcl::PointXYZRGB>);
 	 //Keypoints 
 	 pcl::PointCloud<pcl::PointWithScale>::Ptr keypoints_out (new pcl::PointCloud<pcl::PointWithScale>);
 	 pcl::PointCloud<pcl::PointWithScale>::Ptr keypoints_out2 (new pcl::PointCloud<pcl::PointWithScale>);
@@ -128,10 +130,10 @@ void simpleVis ()
 	 pcl::PointCloud<pcl::PFHSignature125>::Ptr descriptors_out (new pcl::PointCloud<pcl::PFHSignature125>);
 	 pcl::PointCloud<pcl::PFHSignature125>::Ptr descriptors_out2 (new pcl::PointCloud<pcl::PFHSignature125>);
 	//* load the file 
-	 if (pcl::io::loadPCDFile<pcl::PointXYZRGB> ("./PointCloudCaptures/capture_5.pcd", *cloud) == -1){  
+	 if (pcl::io::loadPCDFile<pcl::PointXYZRGB> ("./PointCloudCaptures/capture_14.pcd", *cloud) == -1){  
     		PCL_ERROR ("Couldn't read the pcd file  \n"); 
   		} 
-  	if (pcl::io::loadPCDFile<pcl::PointXYZRGB> ("./PointCloudCaptures/capture_6.pcd", *cloud2) == -1){  
+  	if (pcl::io::loadPCDFile<pcl::PointXYZRGB> ("./PointCloudCaptures/capture_20.pcd", *cloud2) == -1){  
     		PCL_ERROR ("Couldn't read the pcd file  \n"); 
   		} 
   	//cloud loaded 
@@ -149,7 +151,8 @@ void simpleVis ()
   	boost::shared_ptr<pcl::Correspondences> corresp = correspondencesPFH(descriptors_out,descriptors_out2,keypoints_target,keypoints_target2);
   	Eigen::Matrix4f transf_matrix = rigidTransformation(keypoints_target,keypoints_target2,corresp);
 
-  	pcl::transformPointCloud (*cloud, *cloud2, transf_matrix); 
+  	pcl::transformPointCloud (*cloud2, *cloud_dst, transf_matrix); 
+  	*cloud += *cloud_dst;
     //Visualize point cloud and keypoints 
 
     //pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloud_1_color_handler (cloud, 0, 255, 0);
@@ -157,9 +160,14 @@ void simpleVis ()
 
 	//viz.addPointCloud (cloud, cloud_1_color_handler, "cloud_1");
 	//viz.addPointCloud (cloud2, cloud_2_color_handler, "cloud_2");
-	viz.addPointCloud(cloud, "target"); 
-	viz2.addPointCloud(cloud2, "target2"); 
+	//viz.addPointCloud(cloud_dst, "dest"); 
+	viz.addPointCloud(cloud, "origen"); 
+	viz2.addPointCloud(cloud2, "origen2");
     //print points for features
+    cout << transf_matrix <<endl;
+    cout << "test key points" << keypoints_target->size()<< endl;
+    cout << "test key points 2" << keypoints_target2->size()<< endl;
+
     cout << "Puntos del detector: " << descriptors_out->size() << endl;
     cout << "Puntos del detector: " << descriptors_out2->size() << endl;
   	//visualizo 
