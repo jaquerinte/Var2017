@@ -193,13 +193,13 @@ ICCVTutorial<FeatureType>::ICCVTutorial(boost::shared_ptr<pcl::Keypoint<pcl::Poi
   determineFinalTransformation ();
 
   //pcl::transformPointCloud (*source, *source_dst, transformation_matrix_); 
-  //if(first){
-  //*acumulated = *source_transformed_;
-  //first = false;
-//}else{
+  if(first){
+  *acumulated = *source_transformed_;
+  first = false;
+}else{
   *acumulated += *source_transformed_;
   Last = source_transformed_;
-//}
+}
   
   
 }
@@ -446,12 +446,12 @@ void callback(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& msg)
 
 	pcl::VoxelGrid<pcl::PointXYZRGB > vGrid;
 	vGrid.setInputCloud (cloud);
-	vGrid.setLeafSize (0.03f, 0.03f, 0.03f);
+	vGrid.setLeafSize (0.05f, 0.05f, 0.05f);
 	vGrid.filter (*cloud_filtered);
 	if(Last->size() == 0){
 		cout << "last empy"<<endl;
 		Last = cloud_filtered;
-		acumulated = cloud_filtered;
+		//acumulated = cloud_filtered;
 	}
 	else{
 	
