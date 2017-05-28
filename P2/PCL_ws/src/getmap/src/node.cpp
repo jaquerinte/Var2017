@@ -44,6 +44,10 @@
 #include <pcl/io/pcd_io.h>
 #include <iostream>
 
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl/registration/icp.h>
+
 
 
 
@@ -174,31 +178,39 @@ ICCVTutorial<FeatureType>::ICCVTutorial(boost::shared_ptr<pcl::Keypoint<pcl::Poi
 {
   //visualizer_.registerKeyboardCallback(&ICCVTutorial::keyboard_callback, *this, 0); 
 
-  //pcl::PointCloud<pcl::PointXYZRGB>::Ptr source_dst (new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr source_dst (new pcl::PointCloud<pcl::PointXYZRGB>);
+  //compiamos las nubes para quitar los punteros constantes
   *source_segmented_ = *source_;
   *target_segmented_ = *target_;
-  
+  //Sacamos los Keypoints del source y del target 
   detectKeypoints (source_segmented_, source_keypoints_);
   detectKeypoints (target_segmented_, target_keypoints_);
-  
+  //Extraemos los descriptores del source y del target 
   extractDescriptors (source_segmented_, source_keypoints_, source_features_);
   extractDescriptors (target_segmented_, target_keypoints_, target_features_);
-  
+  //Sacamos las correspondecias entre ambas 
   findCorrespondences (source_features_, target_features_, source2target_);
   findCorrespondences (target_features_, source_features_, target2source_);
-  
+  // teniendo las correspondencias de ambos descartamos las que no son posibles 
   filterCorrespondences ();
-  
+  //determinamos la trasformacion inicial 
   determineInitialTransformation ();
+  //aplicamos ICP a las nuebes
   determineFinalTransformation ();
-
-  //pcl::transformPointCloud (*source, *source_dst, transformation_matrix_); 
+  
   if(first){
-  *acumulated = *source_transformed_;
+  //*acumulated = *source_transformed_;
+  //si es la primea la imagen la mete en el mapa gobal
+  	*acumulated = *source_registered_;
   first = false;
-}else{
-  *acumulated += *source_transformed_;
-  Last = source_transformed_;
+  }else{
+  //*acumulated += *source_transformed_;
+  //Last = source_transformed_;
+  //añadimos al mapa la imagen 
+  *acumulated += *source_registered_;
+  //guaramos la anterior transformada asi aguardamos la matriz de trasformacion global 
+  Last = source_registered_;
+  
 }
   
   
@@ -438,41 +450,42 @@ void simpleVis ()
 
 void callback(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& msg)
 {
+	//nube original 
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>(*msg));
+	//nube filtrada
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZRGB>);
 
 
 	//cout << "Puntos capturados: " << cloud->size() << endl;
-
+	//Pasamos la nube por el voxelGrid
 	pcl::VoxelGrid<pcl::PointXYZRGB > vGrid;
 	vGrid.setInputCloud (cloud);
-	vGrid.setLeafSize (0.05f, 0.05f, 0.05f);
+	//establecemos el tamño del voxel
+	vGrid.setLeafSize (0.03f, 0.03f, 0.03f);
 	vGrid.filter (*cloud_filtered);
+	//si es la primera vuelta cargamos Last en la memoria
 	if(Last->size() == 0){
 		cout << "last empy"<<endl;
 		Last = cloud_filtered;
 		//acumulated = cloud_filtered;
 	}
 	else{
-	
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr source (new pcl::PointCloud<pcl::PointXYZRGB>);
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr target (new pcl::PointCloud<pcl::PointXYZRGB>);
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr sourceAnte (new pcl::PointCloud<pcl::PointXYZRGB>);
   
+  	//creamos el keypoint detector
   	boost::shared_ptr<pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI> > keypoint_detector;
   
- 
+ 	//Seleccionamos Sift para la extracción de Keypoints 
     pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>* sift3D = new pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>;
     sift3D->setScales(0.01, 3, 4);
     sift3D->setMinimumContrast(0.0);
     keypoint_detector.reset(sift3D);
-  
-      pcl::Feature<pcl::PointXYZRGB, pcl::PFHRGBSignature250>::Ptr feature_extractor (new pcl::PFHRGBEstimation<pcl::PointXYZRGB, pcl::Normal, pcl::PFHRGBSignature250>);
-      feature_extractor->setKSearch(50);
-      //cambiar constructor
-      //ICCVTutorial<pcl::PFHRGBSignature250> tutorial (keypoint_detector, feature_extractor, sourceAnte, source, target);
-      ICCVTutorial<pcl::PFHRGBSignature250> tutorial (keypoint_detector, feature_extractor, sourceAnte,cloud_filtered,Last);
-      //tutorial.run ();
+  	//seleccionamos el descriptor en nustro caso PFHRGBSignature
+    pcl::Feature<pcl::PointXYZRGB, pcl::PFHRGBSignature250>::Ptr feature_extractor (new pcl::PFHRGBEstimation<pcl::PointXYZRGB, pcl::Normal, pcl::PFHRGBSignature250>);
+    feature_extractor->setKSearch(50);
+    //llamada a la funcion de calculo de las nubes
+    ICCVTutorial<pcl::PFHRGBSignature250> tutorial (keypoint_detector, feature_extractor, sourceAnte,cloud_filtered,Last);
+
       
 	}
 
@@ -487,14 +500,14 @@ int
 main (int argc, char ** argv)
 {
   
-
+// inicializadores de ros
   ros::init(argc, argv, "sub_pcl");
   ros::NodeHandle nh;
-  // se llama al callback para procesar la nube de puntos
+ // se llama al callback para procesar la nube de puntos
   ros::Subscriber sub = nh.subscribe<pcl::PointCloud<pcl::PointXYZRGB> >("/camera/depth/points", 1, callback);
-
+//hilo que procesa la vista
   boost::thread t(simpleVis);
-
+//bucle sin fin para el funcionamiento de ros
  while(ros::ok())
   {
 	ros::spinOnce();

@@ -59,13 +59,13 @@ class NavigationNode:
           if event.type == QUIT: sys.exit()
           if event.type == KEYDOWN and event.key == K_a: # left
 			move_cmd.linear.x = 0.0
-			move_cmd.angular.z = 0.1
+			move_cmd.angular.z = 0.01
           if event.type == KEYDOWN and event.key == K_d: # right
 			move_cmd.linear.x = 0.0
-			move_cmd.angular.z = -0.1
+			move_cmd.angular.z = -0.01
           if event.type == KEYDOWN and event.key == K_w: # straight
 			move_cmd.angular.z = 0.0
-			move_cmd.linear.x = 0.3
+			move_cmd.linear.x = 0.01
           if event.type == KEYDOWN and event.key == K_s: # stop
 			move_cmd.linear.x = 0.0
 			move_cmd.angular.z = 0.0

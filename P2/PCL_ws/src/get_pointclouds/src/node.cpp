@@ -27,7 +27,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr acumulated (new pcl::PointCloud<pcl::Poin
 pcl::PointCloud<pcl::PointXYZRGB>::Ptr Last (new pcl::PointCloud<pcl::PointXYZRGB>);
 pcl::PointCloud<pcl::PointXYZRGB>::Ptr load (new pcl::PointCloud<pcl::PointXYZRGB>);
 
-
+bool inicio = true;
 
 
 const float min_scale = 0.01f;
@@ -146,8 +146,16 @@ void transform (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &cloud)
   	Eigen::Matrix4f transf_matrix = rigidTransformation(keypoints_target,keypoints_target2,corresp);
 
   	pcl::transformPointCloud (*cloud, *cloud_dst, transf_matrix); 
+  	
+  	if(inicio){
+	*acumulated = *cloud_dst;
+  	Last = cloud_dst;
+  	}
+  	else{
   	*acumulated += *cloud_dst;
-  	Last = cloud;
+  	Last = cloud_dst;
+  	}
+  	
   	cout << "last changed"<<endl;
 	
 }
@@ -178,16 +186,17 @@ void callback(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& msg)
 
 	pcl::VoxelGrid<pcl::PointXYZRGB > vGrid;
 	vGrid.setInputCloud (cloud);
-	vGrid.setLeafSize (0.005f, 0.005f, 0.005f);
+	vGrid.setLeafSize (0.05f, 0.05f, 0.05f);
 	vGrid.filter (*cloud_filtered);
 	if(Last->size() == 0){
 		cout << "last empy"<<endl;
 		Last = cloud_filtered;
-		acumulated = cloud_filtered;
+		//acumulated = cloud_filtered;
 	}
-	
+	else{
 	transform(cloud_filtered);
 	cout << "end callback"<<endl;
+	}
 	
 	
 }
