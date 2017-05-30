@@ -1,0 +1,6 @@
+Hay que destacar que cornerHarris genera mas descriptores que Sift pero sin mejora aprente 
+Harris con PFH250 con TOMASI el que obtiene el mejor resultado, Lowe tarda demasiado para que sea factible una aplicacion en tiempo real
+
+Curvature detecta entre 1 y 2 keypoint, imposible utilizarlo para nuestra aplicacion. 
+
+De momento Tomasi mejor resultado .

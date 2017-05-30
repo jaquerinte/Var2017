@@ -301,7 +301,7 @@ void ICCVTutorial<FeatureType>::extractDescriptors (typename pcl::PointCloud<pcl
   if (feature_from_normals)
   //if (boost::dynamic_pointer_cast<typename pcl::FeatureFromNormals<pcl::PointXYZRGB, pcl::Normal, FeatureType> > (feature_extractor_))
   {
-    cout << "normal estimation..." << std::flush;
+   // cout << "normal estimation..." << std::flush;
     typename pcl::PointCloud<pcl::Normal>::Ptr normals (new  pcl::PointCloud<pcl::Normal>);
     pcl::NormalEstimation<pcl::PointXYZRGB, pcl::Normal> normal_estimation;
     normal_estimation.setSearchMethod (pcl::search::Search<pcl::PointXYZRGB>::Ptr (new pcl::search::KdTree<pcl::PointXYZRGB>));
@@ -309,18 +309,18 @@ void ICCVTutorial<FeatureType>::extractDescriptors (typename pcl::PointCloud<pcl
     normal_estimation.setInputCloud (input);
     normal_estimation.compute (*normals);
     feature_from_normals->setInputNormals(normals);
-    cout << "OK" << endl;
+  //  cout << "OK" << endl;
   }
 
-  cout << "descriptor extraction..." << std::flush;
+  //cout << "descriptor extraction..." << std::flush;
   feature_extractor_->compute (*features);
-  cout << "OK" << endl;
+ // cout << "OK" << endl;
 }
 
 template<typename FeatureType>
 void ICCVTutorial<FeatureType>::findCorrespondences (typename pcl::PointCloud<FeatureType>::Ptr source, typename pcl::PointCloud<FeatureType>::Ptr target, std::vector<int>& correspondences) const
 {
-  cout << "correspondence assignment..." << std::flush;
+  //cout << "correspondence assignment..." << std::flush;
   correspondences.resize (source->size());
 
   // Use a KdTree to search for the nearest matches in feature space
@@ -336,13 +336,13 @@ void ICCVTutorial<FeatureType>::findCorrespondences (typename pcl::PointCloud<Fe
     descriptor_kdtree.nearestKSearch (*source, i, k, k_indices, k_squared_distances);
     correspondences[i] = k_indices[0];
   }
-  cout << "OK" << endl;
+  //cout << "OK" << endl;
 }
 
 template<typename FeatureType>
 void ICCVTutorial<FeatureType>::filterCorrespondences ()
 {
-  cout << "correspondence rejection..." << std::flush;
+  //cout << "correspondence rejection..." << std::flush;
   std::vector<std::pair<unsigned, unsigned> > correspondences;
   for (unsigned cIdx = 0; cIdx < source2target_.size (); ++cIdx)
     if (target2source_[source2target_[cIdx]] == cIdx)
@@ -360,25 +360,25 @@ void ICCVTutorial<FeatureType>::filterCorrespondences ()
   rejector.setTargetCloud(target_keypoints_);
   rejector.setInputCorrespondences(correspondences_);
   rejector.getCorrespondences(*correspondences_);
-  cout << "OK" << endl;
+  //cout << "OK" << endl;
 }
 
 template<typename FeatureType>
 void ICCVTutorial<FeatureType>::determineInitialTransformation ()
 {
-  cout << "initial alignment..." << std::flush;
+ // cout << "initial alignment..." << std::flush;
   pcl::registration::TransformationEstimation<pcl::PointXYZI, pcl::PointXYZI>::Ptr transformation_estimation (new pcl::registration::TransformationEstimationSVD<pcl::PointXYZI, pcl::PointXYZI>);
   
   transformation_estimation->estimateRigidTransformation (*source_keypoints_, *target_keypoints_, *correspondences_, initial_transformation_matrix_);
   
   pcl::transformPointCloud(*source_segmented_, *source_transformed_, initial_transformation_matrix_);
-  cout << "OK" << endl;
+  //cout << "OK" << endl;
 }
 
 template<typename FeatureType>
 void ICCVTutorial<FeatureType>::determineFinalTransformation ()
 {
-  cout << "final registration..." << std::flush;
+  //cout << "final registration..." << std::flush;
   pcl::Registration<pcl::PointXYZRGB, pcl::PointXYZRGB>::Ptr registration (new pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB>);
   registration->setInputCloud(source_transformed_);
   //registration->setInputCloud(source_segmented_);
@@ -389,13 +389,13 @@ void ICCVTutorial<FeatureType>::determineFinalTransformation ()
   registration->setMaximumIterations (1000);
   registration->align(*source_registered_);
   transformation_matrix_ = registration->getFinalTransformation();
-  cout << "OK" << endl;
+  //cout << "OK" << endl;
 }
 
 template<typename FeatureType>
 void ICCVTutorial<FeatureType>::reconstructSurface ()
 {
-  cout << "surface reconstruction..." << std::flush;
+ // cout << "surface reconstruction..." << std::flush;
   // merge the transformed and the target point cloud
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr merged (new pcl::PointCloud<pcl::PointXYZRGB>);
   *merged = *source_transformed_;
@@ -423,7 +423,7 @@ void ICCVTutorial<FeatureType>::reconstructSurface ()
   surface_reconstructor_->setSearchMethod(tree);
   surface_reconstructor_->setInputCloud(vertices);
   surface_reconstructor_->reconstruct(surface_);
-  cout << "OK" << endl;
+ // cout << "OK" << endl;
 }
 
 template<typename FeatureType>
@@ -461,11 +461,11 @@ void callback(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& msg)
 	pcl::VoxelGrid<pcl::PointXYZRGB > vGrid;
 	vGrid.setInputCloud (cloud);
 	//establecemos el tamño del voxel
-	vGrid.setLeafSize (0.03f, 0.03f, 0.03f);
+	vGrid.setLeafSize (0.05f, 0.05f, 0.05f);
 	vGrid.filter (*cloud_filtered);
 	//si es la primera vuelta cargamos Last en la memoria
 	if(Last->size() == 0){
-		cout << "last empy"<<endl;
+	//	cout << "last empy"<<endl;
 		Last = cloud_filtered;
 		//acumulated = cloud_filtered;
 	}
@@ -476,10 +476,21 @@ void callback(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& msg)
   	boost::shared_ptr<pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI> > keypoint_detector;
   
  	//Seleccionamos Sift para la extracción de Keypoints 
-    pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>* sift3D = new pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>;
+    /*pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>* sift3D = new pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>;
     sift3D->setScales(0.01, 3, 4);
     sift3D->setMinimumContrast(0.0);
-    keypoint_detector.reset(sift3D);
+    keypoint_detector.reset(sift3D);*/
+
+    pcl::HarrisKeypoint3D<pcl::PointXYZRGB,pcl::PointXYZI>* harris3D = new pcl::HarrisKeypoint3D<pcl::PointXYZRGB,pcl::PointXYZI> (pcl::HarrisKeypoint3D<pcl::PointXYZRGB,pcl::PointXYZI>::HARRIS);
+    harris3D->setNonMaxSupression(true);
+    harris3D->setRadius (0.01);
+    harris3D->setRadiusSearch (0.01);
+    keypoint_detector.reset(harris3D);
+
+    //harris3D->setMethod(pcl::HarrisKeypoint3D<pcl::PointXYZRGB,pcl::PointXYZI>::TOMASI);
+    harris3D->setMethod(pcl::HarrisKeypoint3D<pcl::PointXYZRGB,pcl::PointXYZI>::NOBLE);
+
+
   	//seleccionamos el descriptor en nustro caso PFHRGBSignature
     pcl::Feature<pcl::PointXYZRGB, pcl::PFHRGBSignature250>::Ptr feature_extractor (new pcl::PFHRGBEstimation<pcl::PointXYZRGB, pcl::Normal, pcl::PFHRGBSignature250>);
     feature_extractor->setKSearch(50);
@@ -490,7 +501,7 @@ void callback(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& msg)
 	}
 
 	
-	cout << "end callback"<<endl;
+	//cout << "end callback"<<endl;
 	
 	
 }

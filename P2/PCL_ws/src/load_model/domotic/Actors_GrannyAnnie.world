@@ -3881,7 +3881,7 @@
         <kinematic>0</kinematic>
       </link>
       <pose>-5.6 -5.16 0 0 -0 1.57</pose>
-      <static>0</static>
+      <static>True</static>
     </model>
     <model name='frigo'>
       <link name='frigo_link'>
